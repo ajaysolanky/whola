@@ -12,19 +12,31 @@
     }
   </style>
   <style amp-custom>
-    /* Add your custom styles here */
+    /* Custom styles */
     .response-container {
+      margin-top: 10px;
+    }
+    .chat-history {
+      white-space: pre-wrap;
+    }
+    input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button {
       margin-top: 10px;
     }
   </style>
 </head>
 <body>
+  <!-- Initialize chat history as an empty array -->
   <amp-state id="chatHistory">
     <script type="application/json">
       []
     </script>
   </amp-state>
 
+  <!-- Initialize chat state with an empty conversation ID -->
   <amp-state id="chatState">
     <script type="application/json">
       {
@@ -32,24 +44,40 @@
       }
     </script>
   </amp-state>
+
+  <!-- State to hold the current message -->
+  <amp-state id="currentMessage">
+    <script type="application/json">
+      ""
+    </script>
+  </amp-state>
   
-  <form method="post" action-xhr="https://0164-2603-7000-5100-74-1da7-5a5c-51ac-dd8b.ngrok-free.app/ganggang" id="chat-form" 
-      on="submit-success:AMP.setState({
-          chatHistory: chatHistory.splice(chatHistory.length, 0, 'You: ' + '<fix_later>', 'Response: ' + event.response.response),
+  <form method="post" action-xhr="https://c9d1-2603-7000-3100-50b7-4190-d5ed-d671-2ce4.ngrok-free.app/ganggang" id="chat-form" 
+      on="
+      submit-success:AMP.setState({
+          chatHistory: chatHistory.concat(['You: ' + currentMessage, 'Response: ' + event.response.response]),
           chatState: {
             convoId: event.response.convo_id
-          }
-        })">
-  <input type="text" name="message" placeholder="Type your message here" required />
-  <input type="hidden" name="convo_id" [value]="chatState.convoId" value="" />
-  <input type="hidden" name="auth" value="Pv7!n7h3W0rk" />
-  <button type="submit">Send</button>
-  <p [text]="chatHistory"></p>
-  <div submit-error>
-    <template type="amp-mustache">
-      <div class="response-container">Error: {{error}}</div>
-    </template>
-  </div>
-</form>
+          },
+          currentMessage: ''
+        })
+      ">
+    <!-- Bind the input value to currentMessage and update it on input -->
+    <input type="text" name="message" placeholder="Type your message here" required
+           [value]="currentMessage"
+           on="input-debounced:AMP.setState({currentMessage: event.value})" />
+    <!-- Hidden fields for conversation ID and authentication -->
+    <input type="hidden" name="convo_id" [value]="chatState.convoId" value="" />
+    <input type="hidden" name="auth" value="Pv7!n7h3W0rk" />
+    <button type="submit">Send</button>
+    <!-- Display the chat history -->
+    <p [text]="chatHistory.join('\n')" class="chat-history"></p>
+    <!-- Error handling -->
+    <div submit-error>
+      <template type="amp-mustache">
+        <div class="response-container">Error: {{error}}</div>
+      </template>
+    </div>
+  </form>
 </body>
 </html>
