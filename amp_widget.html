@@ -2,41 +2,105 @@
 <html ⚡4email data-css-strict>
 <head>
   <meta charset="utf-8" />
+  <!-- AMP scripts -->
   <script async src="https://cdn.ampproject.org/v0.js"></script>
+  <!-- Use valid version 0.1 for amp-form -->
   <script async custom-element="amp-form" src="https://cdn.ampproject.org/v0/amp-form-0.1.js"></script>
+  <!-- amp-mustache and amp-bind scripts -->
   <script async custom-template="amp-mustache" src="https://cdn.ampproject.org/v0/amp-mustache-0.2.js"></script>
   <script async custom-element="amp-bind" src="https://cdn.ampproject.org/v0/amp-bind-0.1.js"></script>
+  <!-- AMP boilerplate -->
   <style amp4email-boilerplate>
     body {
       visibility: hidden;
     }
   </style>
+  <!-- Custom styles -->
   <style amp-custom>
-    /* Custom styles */
-    .response-container {
-      margin-top: 10px;
+    body {
+      font-family: Arial, sans-serif;
+      padding: 10px;
+    }
+    .chat-container {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .chat-window {
+      background-color: #f9f9f9;
+      height: 300px;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    .chat-message {
+      display: flex;
+      margin-bottom: 10px;
+    }
+    .chat-message.you {
+      justify-content: flex-end;
+    }
+    .chat-message.chatgpt {
+      justify-content: flex-start;
+    }
+    .message-bubble {
+      max-width: 70%;
+      padding: 10px;
+      border-radius: 15px;
+      position: relative;
+      word-wrap: break-word;
+    }
+    .chat-message.you .message-bubble {
+      background-color: #dcf8c6;
+      color: #000;
+    }
+    .chat-message.chatgpt .message-bubble {
+      background-color: #fff;
+      color: #000;
+      border: 1px solid #ccc;
+    }
+    .input-container {
+      display: flex;
+      border-top: 1px solid #ccc;
+    }
+    .input-container input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 0;
+      outline: none;
+      font-size: 16px;
+    }
+    .input-container button {
+      padding: 0 20px;
+      border: none;
+      background-color: #007bff;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    /* Remove disallowed cursor value */
+    .input-container button[disabled], .input-container input[disabled] {
+      background-color: #ccc;
+    }
+    .loading-indicator {
+      text-align: center;
+      padding: 10px;
+      font-style: italic;
+      color: #888;
     }
     .chat-history {
       white-space: pre-wrap;
     }
-    input[type="text"] {
-      width: 100%;
-      box-sizing: border-box;
-    }
-    button {
-      margin-top: 10px;
-    }
   </style>
 </head>
 <body>
-  <!-- Initialize chat history as an empty array -->
+  <!-- State variables -->
   <amp-state id="chatHistory">
     <script type="application/json">
       []
     </script>
   </amp-state>
 
-  <!-- Initialize chat state with an empty conversation ID -->
   <amp-state id="chatState">
     <script type="application/json">
       {
@@ -45,39 +109,66 @@
     </script>
   </amp-state>
 
-  <!-- State to hold the current message -->
   <amp-state id="currentMessage">
     <script type="application/json">
       ""
     </script>
   </amp-state>
-  
-  <form method="post" action-xhr="https://c9d1-2603-7000-3100-50b7-4190-d5ed-d671-2ce4.ngrok-free.app/ganggang" id="chat-form" 
-      on="
-      submit-success:AMP.setState({
-          chatHistory: chatHistory.concat(['You: ' + currentMessage, 'Response: ' + event.response.response]),
-          chatState: {
-            convoId: event.response.convo_id
-          },
-          currentMessage: ''
-        })
-      ">
-    <!-- Bind the input value to currentMessage and update it on input -->
-    <input type="text" name="message" placeholder="Type your message here" required
-           [value]="currentMessage"
-           on="input-debounced:AMP.setState({currentMessage: event.value})" />
-    <!-- Hidden fields for conversation ID and authentication -->
-    <input type="hidden" name="convo_id" [value]="chatState.convoId" value="" />
-    <input type="hidden" name="auth" value="Pv7!n7h3W0rk" />
-    <button type="submit">Send</button>
-    <!-- Display the chat history -->
-    <p [text]="chatHistory.join('\n')" class="chat-history"></p>
-    <!-- Error handling -->
-    <div submit-error>
-      <template type="amp-mustache">
-        <div class="response-container">Error: {{error}}</div>
-      </template>
+
+  <amp-state id="isSubmitting">
+    <script type="application/json">
+      false
+    </script>
+  </amp-state>
+
+  <!-- Chat container -->
+  <div class="chat-container">
+    <!-- Chat window -->
+    <div class="chat-window" id="chat-window">
+      <!-- Display the chat history -->
+      <div class="chat-history">
+        <p [text]="chatHistoryText"></p>
+      </div>
+      <!-- Loading indicator -->
+      <div [hidden]="!isSubmitting" class="loading-indicator">Waiting for response...</div>
     </div>
-  </form>
+
+    <!-- Input container -->
+    <form method="post" action-xhr="https://c9d1-2603-7000-3100-50b7-4190-d5ed-d671-2ce4.ngrok-free.app/ganggang" id="chat-form"
+          on="
+          submit:AMP.setState({isSubmitting: true});
+          submit-success:AMP.setState({
+            chatHistory: chatHistory.concat([
+              {'sender': 'You', 'message': currentMessage},
+              {'sender': 'ChatGPT', 'message': event.response.response}
+            ]),
+            chatHistoryText: chatHistory.concat([
+              {'sender': 'You', 'message': currentMessage},
+              {'sender': 'ChatGPT', 'message': event.response.response}
+            ]).map(item => item.sender + ': ' + item.message).join('\n\n'),
+            chatState: { convoId: event.response.convo_id },
+            currentMessage: '',
+            isSubmitting: false
+          });
+          submit-error:AMP.setState({isSubmitting: false});
+          ">
+      <div class="input-container">
+        <input type="text" name="message" placeholder="Type your message here" required
+               [value]="currentMessage"
+               [disabled]="isSubmitting"
+               on="input-debounced:AMP.setState({currentMessage: event.value})" />
+        <input type="hidden" name="convo_id" [value]="chatState.convoId" value="" />
+        <input type="hidden" name="auth" value="Pv7!n7h3W0rk" />
+        <button type="submit" [disabled]="isSubmitting">Send</button>
+      </div>
+
+      <!-- Error handling -->
+      <div submit-error>
+        <template type="amp-mustache">
+          <div class="response-container">Error: {{error}}</div>
+        </template>
+      </div>
+    </form>
+  </div>
 </body>
 </html>
