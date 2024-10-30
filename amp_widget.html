@@ -32,6 +32,9 @@
       overflow: hidden;
       background-color: #fff;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      height: 400px; /* Adjusted height to accommodate header, chat window, and input */
     }
     .chat-header {
       background-color: #6200EE;
@@ -44,13 +47,15 @@
     }
     .chat-window {
       background-color: #f5f5f5;
-      height: 300px;
+      flex: 1; /* Allows the chat window to expand */
       overflow-y: auto;
       padding: 10px;
     }
     .chat-history {
       display: flex;
-      flex-direction: column;
+      flex-direction: column-reverse; /* Reverse the column direction */
+      justify-content: flex-start;    /* Align from the bottom */
+      min-height: 100%;
     }
     .chat-message {
       display: flex;
@@ -66,8 +71,8 @@
       max-width: 70%;
       padding: 10px;
       border-radius: 15px;
-      position: relative;
       word-wrap: break-word;
+      word-break: break-word;
       background-color: #f1f0f0;
     }
     .chat-message.you .message-bubble {
@@ -104,7 +109,8 @@
       cursor: pointer;
       padding: 0 20px;
     }
-    .input-container button[disabled], .input-container input[disabled] {
+    .input-container button[disabled],
+    .input-container input[disabled] {
       background-color: #ccc;
     }
   </style>
@@ -148,124 +154,114 @@
     <div class="chat-window" id="chat-window">
       <!-- Display the chat history -->
       <div class="chat-history">
-        <!-- Message 1 - You -->
-        <div class="chat-message you" [hidden]="!(chatHistory.length > 0 && chatHistory[0].sender == 'You')">
+        <!-- Slot 10 -->
+        <div class="chat-message you" [hidden]="!(chatHistory.length > 0 && chatHistory[chatHistory.length -1].sender == 'You')">
           <div class="message-bubble">
-            <p [text]="chatHistory[0].message"></p>
+            <p [text]="chatHistory[chatHistory.length -1].message"></p>
           </div>
         </div>
-        <!-- Message 1 - ChatGPT -->
-        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 0 && chatHistory[0].sender == 'ChatGPT')">
+        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 0 && chatHistory[chatHistory.length -1].sender == 'ChatGPT')">
           <div class="message-bubble">
-            <p [text]="chatHistory[0].message"></p>
+            <p [text]="chatHistory[chatHistory.length -1].message"></p>
           </div>
         </div>
-        <!-- Message 2 - You -->
-        <div class="chat-message you" [hidden]="!(chatHistory.length > 1 && chatHistory[1].sender == 'You')">
+        <!-- Slot 9 -->
+        <div class="chat-message you" [hidden]="!(chatHistory.length > 1 && chatHistory[chatHistory.length -2].sender == 'You')">
           <div class="message-bubble">
-            <p [text]="chatHistory[1].message"></p>
+            <p [text]="chatHistory[chatHistory.length -2].message"></p>
           </div>
         </div>
-        <!-- Message 2 - ChatGPT -->
-        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 1 && chatHistory[1].sender == 'ChatGPT')">
+        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 1 && chatHistory[chatHistory.length -2].sender == 'ChatGPT')">
           <div class="message-bubble">
-            <p [text]="chatHistory[1].message"></p>
+            <p [text]="chatHistory[chatHistory.length -2].message"></p>
           </div>
         </div>
-        <!-- Message 3 - You -->
-        <div class="chat-message you" [hidden]="!(chatHistory.length > 2 && chatHistory[2].sender == 'You')">
+        <!-- Slot 8 -->
+        <div class="chat-message you" [hidden]="!(chatHistory.length > 2 && chatHistory[chatHistory.length -3].sender == 'You')">
           <div class="message-bubble">
-            <p [text]="chatHistory[2].message"></p>
+            <p [text]="chatHistory[chatHistory.length -3].message"></p>
           </div>
         </div>
-        <!-- Message 3 - ChatGPT -->
-        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 2 && chatHistory[2].sender == 'ChatGPT')">
+        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 2 && chatHistory[chatHistory.length -3].sender == 'ChatGPT')">
           <div class="message-bubble">
-            <p [text]="chatHistory[2].message"></p>
+            <p [text]="chatHistory[chatHistory.length -3].message"></p>
           </div>
         </div>
-        <!-- Message 4 - You -->
-        <div class="chat-message you" [hidden]="!(chatHistory.length > 3 && chatHistory[3].sender == 'You')">
+        <!-- Slot 7 -->
+        <div class="chat-message you" [hidden]="!(chatHistory.length > 3 && chatHistory[chatHistory.length -4].sender == 'You')">
           <div class="message-bubble">
-            <p [text]="chatHistory[3].message"></p>
+            <p [text]="chatHistory[chatHistory.length -4].message"></p>
           </div>
         </div>
-        <!-- Message 4 - ChatGPT -->
-        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 3 && chatHistory[3].sender == 'ChatGPT')">
+        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 3 && chatHistory[chatHistory.length -4].sender == 'ChatGPT')">
           <div class="message-bubble">
-            <p [text]="chatHistory[3].message"></p>
+            <p [text]="chatHistory[chatHistory.length -4].message"></p>
           </div>
         </div>
-        <!-- Message 5 - You -->
-        <div class="chat-message you" [hidden]="!(chatHistory.length > 4 && chatHistory[4].sender == 'You')">
+        <!-- Slot 6 -->
+        <div class="chat-message you" [hidden]="!(chatHistory.length > 4 && chatHistory[chatHistory.length -5].sender == 'You')">
           <div class="message-bubble">
-            <p [text]="chatHistory[4].message"></p>
+            <p [text]="chatHistory[chatHistory.length -5].message"></p>
           </div>
         </div>
-        <!-- Message 5 - ChatGPT -->
-        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 4 && chatHistory[4].sender == 'ChatGPT')">
+        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 4 && chatHistory[chatHistory.length -5].sender == 'ChatGPT')">
           <div class="message-bubble">
-            <p [text]="chatHistory[4].message"></p>
+            <p [text]="chatHistory[chatHistory.length -5].message"></p>
           </div>
         </div>
-        <!-- Message 6 - You -->
-        <div class="chat-message you" [hidden]="!(chatHistory.length > 5 && chatHistory[5].sender == 'You')">
+        <!-- Slot 5 -->
+        <div class="chat-message you" [hidden]="!(chatHistory.length > 5 && chatHistory[chatHistory.length -6].sender == 'You')">
           <div class="message-bubble">
-            <p [text]="chatHistory[5].message"></p>
+            <p [text]="chatHistory[chatHistory.length -6].message"></p>
           </div>
         </div>
-        <!-- Message 6 - ChatGPT -->
-        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 5 && chatHistory[5].sender == 'ChatGPT')">
+        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 5 && chatHistory[chatHistory.length -6].sender == 'ChatGPT')">
           <div class="message-bubble">
-            <p [text]="chatHistory[5].message"></p>
+            <p [text]="chatHistory[chatHistory.length -6].message"></p>
           </div>
         </div>
-        <!-- Message 7 - You -->
-        <div class="chat-message you" [hidden]="!(chatHistory.length > 6 && chatHistory[6].sender == 'You')">
+        <!-- Slot 4 -->
+        <div class="chat-message you" [hidden]="!(chatHistory.length > 6 && chatHistory[chatHistory.length -7].sender == 'You')">
           <div class="message-bubble">
-            <p [text]="chatHistory[6].message"></p>
+            <p [text]="chatHistory[chatHistory.length -7].message"></p>
           </div>
         </div>
-        <!-- Message 7 - ChatGPT -->
-        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 6 && chatHistory[6].sender == 'ChatGPT')">
+        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 6 && chatHistory[chatHistory.length -7].sender == 'ChatGPT')">
           <div class="message-bubble">
-            <p [text]="chatHistory[6].message"></p>
+            <p [text]="chatHistory[chatHistory.length -7].message"></p>
           </div>
         </div>
-        <!-- Message 8 - You -->
-        <div class="chat-message you" [hidden]="!(chatHistory.length > 7 && chatHistory[7].sender == 'You')">
+        <!-- Slot 3 -->
+        <div class="chat-message you" [hidden]="!(chatHistory.length > 7 && chatHistory[chatHistory.length -8].sender == 'You')">
           <div class="message-bubble">
-            <p [text]="chatHistory[7].message"></p>
+            <p [text]="chatHistory[chatHistory.length -8].message"></p>
           </div>
         </div>
-        <!-- Message 8 - ChatGPT -->
-        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 7 && chatHistory[7].sender == 'ChatGPT')">
+        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 7 && chatHistory[chatHistory.length -8].sender == 'ChatGPT')">
           <div class="message-bubble">
-            <p [text]="chatHistory[7].message"></p>
+            <p [text]="chatHistory[chatHistory.length -8].message"></p>
           </div>
         </div>
-        <!-- Message 9 - You -->
-        <div class="chat-message you" [hidden]="!(chatHistory.length > 8 && chatHistory[8].sender == 'You')">
+        <!-- Slot 2 -->
+        <div class="chat-message you" [hidden]="!(chatHistory.length > 8 && chatHistory[chatHistory.length -9].sender == 'You')">
           <div class="message-bubble">
-            <p [text]="chatHistory[8].message"></p>
+            <p [text]="chatHistory[chatHistory.length -9].message"></p>
           </div>
         </div>
-        <!-- Message 9 - ChatGPT -->
-        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 8 && chatHistory[8].sender == 'ChatGPT')">
+        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 8 && chatHistory[chatHistory.length -9].sender == 'ChatGPT')">
           <div class="message-bubble">
-            <p [text]="chatHistory[8].message"></p>
+            <p [text]="chatHistory[chatHistory.length -9].message"></p>
           </div>
         </div>
-        <!-- Message 10 - You -->
-        <div class="chat-message you" [hidden]="!(chatHistory.length > 9 && chatHistory[9].sender == 'You')">
+        <!-- Slot 1 -->
+        <div class="chat-message you" [hidden]="!(chatHistory.length > 9 && chatHistory[chatHistory.length -10].sender == 'You')">
           <div class="message-bubble">
-            <p [text]="chatHistory[9].message"></p>
+            <p [text]="chatHistory[chatHistory.length -10].message"></p>
           </div>
         </div>
-        <!-- Message 10 - ChatGPT -->
-        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 9 && chatHistory[9].sender == 'ChatGPT')">
+        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 9 && chatHistory[chatHistory.length -10].sender == 'ChatGPT')">
           <div class="message-bubble">
-            <p [text]="chatHistory[9].message"></p>
+            <p [text]="chatHistory[chatHistory.length -10].message"></p>
           </div>
         </div>
       </div>
@@ -278,10 +274,10 @@
           on="
           submit:AMP.setState({isSubmitting: true});
           submit-success:AMP.setState({
-            chatHistory: chatHistory.concat([
+            chatHistory: (chatHistory.concat([
               {'sender': 'You', 'message': currentMessage},
               {'sender': 'ChatGPT', 'message': event.response.response}
-            ]).slice(-10),
+            ])).slice(-10),
             currentMessage: '',
             isSubmitting: false,
             chatState: { convoId: event.response.convo_id }
@@ -308,3 +304,5 @@
   </div>
 </body>
 </html>
+
+
