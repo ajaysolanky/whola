@@ -143,6 +143,25 @@ def render_campaign_templates(
     amp_module = render_amp_module(brand_cfg, chat_endpoint=chat_endpoint, token=token, convo_id=convo_id)
     amp_with_module = inject_chat_module(amp_base, amp_module)
 
+    campaign_content = {
+        "subject": campaign.get("subject", "Campaign update"),
+        "preheader": campaign.get(
+            "preheader",
+            "This campaign includes an interactive AI chat experience in AMP-capable inboxes.",
+        ),
+        "hero_eyebrow": campaign.get("hero_eyebrow", "Featured Campaign"),
+        "hero_headline": campaign.get("hero_headline", campaign.get("subject", "Campaign update")),
+        "hero_body": campaign.get(
+            "hero_body",
+            "we picked these highlights for you and can answer questions instantly in your inbox.",
+        ),
+        "offer_badge": campaign.get("offer_badge", "Featured"),
+        "cta_label": campaign.get("cta_label", "Explore Now"),
+        "feature_1": campaign.get("feature_1", "Curated picks tailored for this campaign"),
+        "feature_2": campaign.get("feature_2", "Fast answers from an embedded AI product rep"),
+        "feature_3": campaign.get("feature_3", "Simple in-email support for purchase questions"),
+    }
+
     token_map = {
         "BRAND_NAME": str(brand_cfg["brand_name"]),
         "BRAND_LOGO_URL": str(brand_cfg["logo_url"]),
@@ -153,7 +172,16 @@ def render_campaign_templates(
         "COLOR_MUTED": str(brand_cfg["color_muted"]),
         "BORDER_RADIUS_PX": str(brand_cfg["border_radius_px"]),
         "SPACING_SCALE": str(brand_cfg["spacing_scale"]),
-        "CAMPAIGN_SUBJECT": campaign["subject"],
+        "CAMPAIGN_SUBJECT": campaign_content["subject"],
+        "CAMPAIGN_PREHEADER": campaign_content["preheader"],
+        "HERO_EYEBROW": campaign_content["hero_eyebrow"],
+        "HERO_HEADLINE": campaign_content["hero_headline"],
+        "HERO_BODY": campaign_content["hero_body"],
+        "OFFER_BADGE": campaign_content["offer_badge"],
+        "CTA_LABEL": campaign_content["cta_label"],
+        "FEATURE_1": campaign_content["feature_1"],
+        "FEATURE_2": campaign_content["feature_2"],
+        "FEATURE_3": campaign_content["feature_3"],
         "RECIPIENT_FIRST_NAME": recipient.get("first_name", "there"),
     }
 
@@ -161,7 +189,7 @@ def render_campaign_templates(
     html_html = _replace_tokens(html_fallback, token_map)
     text_body = (
         f"Hi {recipient.get('first_name', 'there')},\n\n"
-        f"{campaign['subject']}\n\n"
+        f"{campaign_content['subject']}\n\n"
         "This email contains an interactive AMP chat experience in compatible inboxes."
     )
 

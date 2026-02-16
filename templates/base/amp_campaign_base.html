@@ -127,6 +127,7 @@
         overflow-y: auto;
         background: #f7f8fa;
         padding: 10px;
+        scroll-behavior: smooth;
       }
       .chat-history {
         display: flex;
@@ -144,7 +145,11 @@
         line-height: 1.35;
         overflow-wrap: anywhere;
         word-break: break-word;
+        opacity: 0;
+        transform: translateY(6px) scale(0.99);
+        animation: bubble-in 220ms ease-out forwards;
       }
+      .chat-message.you .bubble { animation-name: bubble-in-you; }
       .chat-message.you .bubble {
         background: #dcf8c6;
         color: #111827;
@@ -159,6 +164,7 @@
         color: __COLOR_MUTED__;
         padding: 8px 10px;
         text-align: center;
+        animation: loading-pulse 900ms ease-in-out infinite;
       }
       .chat-input {
         display: flex;
@@ -214,6 +220,21 @@
         padding: 4px 8px;
         color: #334155;
         background: #ffffff;
+      }
+      @keyframes bubble-in {
+        from { opacity: 0; transform: translateY(8px) scale(0.985); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      @keyframes bubble-in-you {
+        from { opacity: 0; transform: translateX(8px) scale(0.985); }
+        to { opacity: 1; transform: translateX(0) scale(1); }
+      }
+      @keyframes loading-pulse {
+        0%, 100% { opacity: 0.45; }
+        50% { opacity: 1; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .bubble, .loading { animation: none; }
       }
     </style>
   </head>

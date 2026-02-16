@@ -146,24 +146,52 @@
       .links a { color: #1d4ed8; text-decoration: none; font-weight: 500; }
       .links a:hover { text-decoration: underline; }
       .empty { color: var(--muted); font-size: 14px; padding: 8px 0; }
-      .sim-wrap { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff; }
-      .sim-head {
-        padding: 10px 12px;
-        border-bottom: 1px solid var(--line);
-        background: #f8fafc;
+      .sim-wrap { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #f8fafc; padding: 12px; }
+      .sim-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .sim-toolbar p {
+        margin: 0;
+        color: #475569;
+        font-size: 12px;
+      }
+      .sim-debug {
+        margin-bottom: 10px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 8px;
+        background: #fff;
+        padding: 8px 10px;
+      }
+      .sim-debug summary {
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+        color: #334155;
+      }
+      .sim-debug pre {
+        margin: 8px 0 0;
+        white-space: pre-wrap;
+        word-break: break-word;
         font-size: 12px;
         color: #475569;
       }
-      .sim-head strong { color: #1e293b; }
       .sim-frame {
         width: 100%;
-        height: 640px;
+        height: 760px;
         border: 0;
         background: #fff;
+        border-radius: 10px;
       }
       .sim-help { font-size: 12px; color: var(--muted); margin-top: 8px; }
       .sim-help a { color: #1d4ed8; text-decoration: none; }
       .sim-help a:hover { text-decoration: underline; }
+      .quick-links { margin-top: 8px; font-size: 13px; }
+      .quick-links a { color: #1d4ed8; text-decoration: none; margin-right: 12px; }
+      .quick-links a:hover { text-decoration: underline; }
       @media (max-width: 980px) {
         .stats { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
         .grid { grid-template-columns: 1fr; }
@@ -177,6 +205,9 @@
         <div>
           <h1>Demo Operator Dashboard</h1>
           <p class="subtitle">Build a branded AMP campaign, send it, and monitor live inbox conversations.</p>
+          <div class="quick-links">
+            <a href="/demo/examples">Campaign Example Gallery</a>
+          </div>
         </div>
         <div class="endpoint">
           <strong>Chat API Endpoint</strong><br />{{ base_url }}/api/v1/chat/message
@@ -207,11 +238,17 @@
           Use this for quick visual checks, then validate in real inbox clients.
         </p>
         <div class="sim-wrap">
-          <div class="sim-head">
-            <strong>Theme:</strong> {{ amp_simulation.brand_id }} |
-            <strong>Chat endpoint:</strong> {{ base_url }}/api/v1/chat/message
+          <div class="sim-toolbar">
+            <p>Theme <strong>{{ amp_simulation.brand_id }}</strong> with preset <strong>{{ amp_simulation.preset_id }}</strong>.</p>
+            <a href="/demo/examples?brand={{ amp_simulation.brand_id }}&preset={{ amp_simulation.preset_id }}" target="_blank">Open full campaign gallery</a>
           </div>
-          <iframe class="sim-frame" sandbox="allow-scripts allow-forms allow-same-origin" srcdoc="{{ amp_simulation.amp_html|e }}"></iframe>
+          <details class="sim-debug">
+            <summary>Debug info</summary>
+            <pre>Campaign ID: {{ amp_simulation.campaign_id }}
+Preset: {{ amp_simulation.preset_id }}
+Chat endpoint: {{ base_url }}/api/v1/chat/message</pre>
+          </details>
+          <iframe class="sim-frame" srcdoc="{{ amp_simulation.amp_html|e }}"></iframe>
         </div>
         <p class="sim-help">
           For strict validation, copy from
@@ -238,6 +275,14 @@
             <div>
               <label>Campaign Name</label>
               <input name="name" placeholder="Q1 Demo Campaign" required />
+            </div>
+            <div>
+              <label>Campaign Style Preset</label>
+              <select name="preset_id">
+                {% for preset in presets %}
+                <option value="{{ preset.id }}">{{ preset.label }}</option>
+                {% endfor %}
+              </select>
             </div>
             <div>
               <label>Subject</label>
@@ -282,12 +327,19 @@
                 <td class="actions">
                   <form method="post" action="/demo/admin/campaigns/{{ c.id }}/send">
                     <input type="hidden" name="base_url" value="{{ base_url }}" />
+                    <select name="preset_id" style="margin-bottom:8px;">
+                      {% for preset in presets %}
+                      <option value="{{ preset.id }}" {% if preset.id == selected_preview_preset %}selected{% endif %}>
+                        {{ preset.label }}
+                      </option>
+                      {% endfor %}
+                    </select>
                     <button class="send-btn" type="submit">Send Campaign</button>
                   </form>
                   <div class="links">
-                    <a href="/demo/admin?preview_campaign={{ c.id }}#amp-sim">Simulate AMP</a>
-                    <a href="/api/v1/demo/preview/{{ c.brand_id }}" target="_blank">Preview JSON</a>
-                    <a href="/demo/preview-page/{{ c.brand_id }}" target="_blank">Preview Page</a>
+                    <a href="/demo/admin?preview_campaign={{ c.id }}&preview_preset={{ selected_preview_preset }}#amp-sim">Simulate AMP</a>
+                    <a href="/api/v1/demo/preview/{{ c.brand_id }}?preset={{ selected_preview_preset }}" target="_blank">Preview JSON</a>
+                    <a href="/demo/preview-page/{{ c.brand_id }}?preset={{ selected_preview_preset }}" target="_blank">Preview Page</a>
                   </div>
                 </td>
               </tr>
@@ -323,5 +375,84 @@
         </div>
       </div>
     </div>
+    {% if amp_simulation %}
+    <script>
+      (function () {
+        window.__simScriptLoaded = true;
+        const iframe = document.querySelector(".sim-frame");
+        if (!iframe) return;
+
+        function attachAutoScroll(attempt) {
+          const tryCount = attempt || 0;
+          const doc = iframe.contentDocument;
+          if (!doc) return;
+          const chatWindow = doc.querySelector(".chat-window");
+          const chatHistory = doc.querySelector(".chat-history");
+          const getChatInput = function () {
+            return doc.querySelector(".chat-input input[name='message']");
+          };
+          if (!chatWindow || !chatHistory) {
+            if (tryCount < 40) {
+              setTimeout(function () { attachAutoScroll(tryCount + 1); }, 100);
+            }
+            return;
+          }
+          if (doc.body && doc.body.dataset.simHooksReady === "1") {
+            return;
+          }
+          if (doc.body) {
+            doc.body.dataset.simHooksReady = "1";
+          }
+
+          const scrollToBottom = function () {
+            chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: "smooth" });
+          };
+
+          scrollToBottom();
+          const observer = new MutationObserver(function () {
+            const chatInput = getChatInput();
+            if (chatInput && !chatInput.disabled) {
+              chatInput.value = "";
+            }
+            requestAnimationFrame(scrollToBottom);
+          });
+          observer.observe(chatHistory, { childList: true, subtree: true, characterData: true });
+
+          const form = doc.querySelector(".chat-card form");
+          if (form) {
+            form.addEventListener("submit", function () {
+              let clearTicks = 0;
+              const clearLoop = setInterval(function () {
+                clearTicks += 1;
+                const chatInput = getChatInput();
+                if (chatInput) {
+                  chatInput.value = "";
+                }
+                if (!chatInput || (!chatInput.disabled && clearTicks > 8) || clearTicks > 60) {
+                  clearInterval(clearLoop);
+                }
+              }, 50);
+              requestAnimationFrame(scrollToBottom);
+              setTimeout(scrollToBottom, 60);
+              setTimeout(scrollToBottom, 120);
+              setTimeout(scrollToBottom, 220);
+            });
+          }
+        }
+
+        iframe.addEventListener("load", function () { attachAutoScroll(0); });
+        const hookInterval = setInterval(function () {
+          attachAutoScroll(0);
+          const doc = iframe.contentDocument;
+          if (doc && doc.body && doc.body.dataset.simHooksReady === "1") {
+            clearInterval(hookInterval);
+          }
+        }, 250);
+        if (iframe.contentDocument && iframe.contentDocument.readyState === "complete") {
+          attachAutoScroll(0);
+        }
+      })();
+    </script>
+    {% endif %}
   </body>
 </html>

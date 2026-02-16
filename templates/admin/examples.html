@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Campaign Example Gallery</title>
+    <style>
+      body { margin: 0; font-family: Inter, Arial, sans-serif; background: #f3f4f6; color: #111827; }
+      .wrap { max-width: 1200px; margin: 0 auto; padding: 20px; }
+      .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+      h1 { margin: 0; font-size: 34px; letter-spacing: -0.02em; }
+      .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+      .grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+      label { display: block; margin-bottom: 6px; font-size: 12px; color: #4b5563; }
+      select, input, button { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 14px; }
+      button { background: #0f172a; color: #fff; border: 0; cursor: pointer; font-weight: 600; }
+      .meta { color: #64748b; font-size: 13px; margin-bottom: 10px; }
+      .pill { display: inline-block; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 11px; font-weight: 700; border-radius: 999px; padding: 3px 9px; margin-right: 8px; }
+      .frame { width: 100%; height: 960px; border: 1px solid #dbe1ea; border-radius: 10px; background: #fff; }
+      .links { margin-top: 10px; }
+      .links a { color: #1d4ed8; text-decoration: none; margin-right: 10px; font-size: 13px; }
+      .links a:hover { text-decoration: underline; }
+      .preset-copy { margin-top: 10px; color: #374151; font-size: 13px; line-height: 1.45; }
+      @media (max-width: 980px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="top">
+        <h1>Campaign Example Gallery</h1>
+        <a href="/demo/admin">Back to Dashboard</a>
+      </div>
+
+      <div class="card">
+        <form method="get" action="/demo/examples">
+          <div class="grid">
+            <div>
+              <label>Brand</label>
+              <select name="brand">
+                {% for brand in brands %}
+                <option value="{{ brand.brand_id }}" {% if selected_brand and selected_brand.brand_id == brand.brand_id %}selected{% endif %}>
+                  {{ brand.brand_name }} ({{ brand.brand_id }})
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div>
+              <label>Campaign Preset</label>
+              <select name="preset">
+                {% for preset in presets %}
+                <option value="{{ preset.id }}" {% if selected_preset.id == preset.id %}selected{% endif %}>{{ preset.label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div>
+              <label>Recipient First Name</label>
+              <input name="first_name" value="{{ first_name }}" />
+            </div>
+            <div>
+              <label>&nbsp;</label>
+              <button type="submit">Render Example</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="meta">
+          <span class="pill">Brand: {{ selected_brand.brand_name if selected_brand else 'N/A' }}</span>
+          <span class="pill">Preset: {{ selected_preset.label }}</span>
+        </div>
+        <iframe class="frame" src="{{ iframe_url }}"></iframe>
+        <div class="links">
+          <a href="{{ iframe_url }}" target="_blank">Open Fallback Preview</a>
+          <a href="{{ json_url }}" target="_blank">Open AMP JSON</a>
+          <a href="https://amp.gmail.dev/playground/" target="_blank">AMP Playground</a>
+        </div>
+        <div class="preset-copy">
+          <strong>Subject:</strong> {{ selected_preset.subject }}<br />
+          <strong>Preheader:</strong> {{ selected_preset.preheader }}<br />
+          <strong>Hero:</strong> {{ selected_preset.hero_headline }}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -9,6 +9,7 @@ from flask_cors import CORS
 from sqlalchemy import func
 
 from app_config import settings
+from campaign_presets import DEFAULT_PRESET_ID, get_preset, list_presets
 from chat_service import ChatServiceError, get_conversation_messages, handle_message
 from database import SessionLocal, init_db
 from mailer_service import MailerError, send_campaign_email
@@ -57,6 +58,17 @@ def _parse_recipients_from_text(raw: str) -> list[dict[str, str]]:
             continue
         recipients.append({"email": email, "first_name": first_name or "there"})
     return recipients
+
+
+def _campaign_payload_with_preset(
+    base_subject: str,
+    preset_id: str | None,
+    subject_override: str | None = None,
+) -> dict[str, str]:
+    preset = get_preset(preset_id)
+    payload = dict(preset)
+    payload["subject"] = subject_override or base_subject or preset["subject"]
+    return payload
 
 
 @app.before_request
@@ -108,10 +120,12 @@ def admin_dashboard():
     message = request.args.get("message", "")
     error = request.args.get("error", "")
     preview_campaign_id = request.args.get("preview_campaign", "").strip()
+    preview_preset_id = request.args.get("preview_preset", DEFAULT_PRESET_ID).strip() or DEFAULT_PRESET_ID
     amp_simulation = None
 
     with SessionLocal() as db:
         brands = load_all_brand_configs()
+        presets = list_presets()
         stats = {
             "campaign_count": db.query(func.count(Campaign.id)).scalar() or 0,
             "draft_count": db.query(func.count(Campaign.id)).filter(Campaign.status == "draft").scalar() or 0,
@@ -168,7 +182,10 @@ def admin_dashboard():
                     chat_endpoint = f"{settings.base_url.rstrip('/')}/api/v1/chat/message"
                     rendered = render_campaign_templates(
                         brand_cfg,
-                        campaign={"subject": campaign.subject},
+                        campaign=_campaign_payload_with_preset(
+                            base_subject=campaign.subject,
+                            preset_id=preview_preset_id,
+                        ),
                         recipient=recipient_payload,
                         chat_endpoint=chat_endpoint,
                         token=token,
@@ -177,6 +194,7 @@ def admin_dashboard():
                         "campaign_id": campaign.id,
                         "campaign_name": campaign.name,
                         "brand_id": campaign.brand_id,
+                        "preset_id": preview_preset_id,
                         "amp_html": rendered["amp_html"],
                     }
                 except TemplateError as exc:
@@ -185,6 +203,8 @@ def admin_dashboard():
     return render_template(
         "admin/dashboard.html",
         brands=brands,
+        presets=presets,
+        selected_preview_preset=preview_preset_id,
         stats=stats,
         campaigns=campaigns,
         conversations=conversations,
@@ -203,6 +223,7 @@ def admin_create_campaign():
     from_email = request.form.get("from_email", "").strip()
     reply_to = request.form.get("reply_to", "").strip()
     recipients_raw = request.form.get("recipients", "")
+    preset_id = request.form.get("preset_id", DEFAULT_PRESET_ID).strip() or DEFAULT_PRESET_ID
 
     if not all([brand_id, name, subject, from_email, reply_to]):
         return redirect(url_for("admin_dashboard", error="All campaign fields are required"))
@@ -241,7 +262,9 @@ def admin_create_campaign():
             Event(
                 campaign_id=campaign_id,
                 event_type="campaign_created",
-                payload_json=json.dumps({"name": name, "recipient_count": len(recipients)}),
+                payload_json=json.dumps(
+                    {"name": name, "recipient_count": len(recipients), "preset_id": preset_id}
+                ),
             )
         )
         db.commit()
@@ -253,6 +276,7 @@ def admin_create_campaign():
 def admin_send_campaign(campaign_id: str):
     base_url = request.form.get("base_url", settings.base_url).strip().rstrip("/")
     chat_endpoint = f"{base_url}/api/v1/chat/message"
+    preset_id = request.form.get("preset_id", DEFAULT_PRESET_ID).strip() or DEFAULT_PRESET_ID
 
     sent = 0
     failures: list[dict[str, str]] = []
@@ -275,7 +299,10 @@ def admin_send_campaign(campaign_id: str):
             try:
                 rendered = render_campaign_templates(
                     brand_cfg,
-                    campaign={"subject": campaign.subject},
+                    campaign=_campaign_payload_with_preset(
+                        base_subject=campaign.subject,
+                        preset_id=preset_id,
+                    ),
                     recipient={"email": recipient.email, "first_name": recipient.first_name or "there"},
                     chat_endpoint=chat_endpoint,
                     token=token,
@@ -347,6 +374,7 @@ def create_campaign():
         return _error("recipients must be a non-empty list", 400)
 
     brand_id = str(data["brand_id"])
+    preset_id = str(data.get("preset_id", DEFAULT_PRESET_ID)).strip() or DEFAULT_PRESET_ID
 
     try:
         load_brand_config(brand_id)
@@ -387,7 +415,9 @@ def create_campaign():
             Event(
                 campaign_id=campaign_id,
                 event_type="campaign_created",
-                payload_json=json.dumps({"name": data["name"], "recipient_count": len(recipients)}),
+                payload_json=json.dumps(
+                    {"name": data["name"], "recipient_count": len(recipients), "preset_id": preset_id}
+                ),
             )
         )
         db.commit()
@@ -410,6 +440,7 @@ def send_campaign(campaign_id: str):
     data = _request_data()
     base_url = str(data.get("base_url", settings.base_url)).rstrip("/")
     chat_endpoint = f"{base_url}/api/v1/chat/message"
+    preset_id = str(data.get("preset_id", DEFAULT_PRESET_ID)).strip() or DEFAULT_PRESET_ID
 
     sent = 0
     failures: list[dict[str, str]] = []
@@ -439,7 +470,10 @@ def send_campaign(campaign_id: str):
             try:
                 rendered = render_campaign_templates(
                     brand_cfg,
-                    campaign={"subject": campaign.subject},
+                    campaign=_campaign_payload_with_preset(
+                        base_subject=campaign.subject,
+                        preset_id=preset_id,
+                    ),
                     recipient={"email": recipient.email, "first_name": recipient.first_name or "there"},
                     chat_endpoint=chat_endpoint,
                     token=token,
@@ -487,9 +521,10 @@ def send_campaign(campaign_id: str):
 
 @app.get("/api/v1/demo/preview/<brand_id>")
 def preview_brand(brand_id: str):
-    subject = request.args.get("subject", "Demo campaign")
+    subject = request.args.get("subject", "")
     first_name = request.args.get("first_name", "there")
     preview_email = request.args.get("email", "preview@example.com")
+    preset_id = request.args.get("preset", DEFAULT_PRESET_ID).strip() or DEFAULT_PRESET_ID
 
     try:
         brand_cfg = load_brand_config(brand_id)
@@ -502,7 +537,11 @@ def preview_brand(brand_id: str):
 
     rendered = render_campaign_templates(
         brand_cfg,
-        campaign={"subject": subject},
+        campaign=_campaign_payload_with_preset(
+            base_subject=subject,
+            preset_id=preset_id,
+            subject_override=subject or None,
+        ),
         recipient={"email": preview_email, "first_name": first_name},
         chat_endpoint=chat_endpoint,
         token=token,
@@ -527,6 +566,38 @@ def preview_page(brand_id: str):
 
     body = response.get_json()["html_fallback"]
     return make_response(body, 200, {"Content-Type": "text/html; charset=utf-8"})
+
+
+@app.get("/demo/examples")
+def demo_examples():
+    brands = load_all_brand_configs()
+    presets = list_presets()
+    brand_id = request.args.get("brand", brands[0]["brand_id"] if brands else "acme").strip()
+    preset_id = request.args.get("preset", DEFAULT_PRESET_ID).strip() or DEFAULT_PRESET_ID
+    first_name = request.args.get("first_name", "Taylor").strip() or "Taylor"
+
+    selected_brand = next((b for b in brands if b["brand_id"] == brand_id), brands[0] if brands else None)
+    selected_preset = get_preset(preset_id)
+
+    iframe_url = (
+        f"/demo/preview-page/{brand_id}"
+        f"?preset={selected_preset['id']}&first_name={first_name}&subject={selected_preset['subject']}"
+    )
+    json_url = (
+        f"/api/v1/demo/preview/{brand_id}"
+        f"?preset={selected_preset['id']}&first_name={first_name}&subject={selected_preset['subject']}"
+    )
+
+    return render_template(
+        "admin/examples.html",
+        brands=brands,
+        presets=presets,
+        selected_brand=selected_brand,
+        selected_preset=selected_preset,
+        first_name=first_name,
+        iframe_url=iframe_url,
+        json_url=json_url,
+    )
 
 
 @app.post("/api/v1/chat/message")
@@ -584,7 +655,14 @@ def chat_message():
             db.rollback()
             return _error(str(exc), status_code)
 
-    return jsonify({"convo_id": convo_id, "response": response_text, "request_id": g.request_id})
+    return jsonify(
+        {
+            "convo_id": convo_id,
+            "user_message": str(message),
+            "response": response_text,
+            "request_id": g.request_id,
+        }
+    )
 
 
 @app.get("/api/v1/demo/conversations")

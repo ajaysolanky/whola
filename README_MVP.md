@@ -43,6 +43,14 @@ curl -X POST http://127.0.0.1:8000/api/v1/demo/campaigns/<campaign_id>/send
 open http://127.0.0.1:8000/demo/preview-page/acme
 ```
 
+## Campaign example gallery (realistic campaign context)
+
+```bash
+open http://127.0.0.1:8000/demo/examples
+```
+
+Use this page to switch brand + campaign preset and preview a more realistic email campaign layout with embedded chat.
+
 ## One-command create+send script
 
 ```bash

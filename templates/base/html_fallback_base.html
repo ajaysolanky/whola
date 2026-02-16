@@ -9,6 +9,7 @@
         background: #f2f4f6;
         margin: 0;
         padding: 16px;
+        color: __COLOR_TEXT__;
       }
       .card {
         max-width: 620px;
@@ -19,28 +20,68 @@
         overflow: hidden;
       }
       .header {
-        padding: 16px;
+        padding: 14px 16px;
         background: __COLOR_PRIMARY__;
         color: white;
+      }
+      .brand { font-size: 16px; font-weight: 700; }
+      .subject { opacity: 0.9; font-size: 13px; margin-top: 4px; }
+      .hero {
+        padding: 16px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .eyebrow {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: __COLOR_MUTED__;
         font-weight: 700;
       }
-      .copy {
-        padding: 16px;
-        color: __COLOR_TEXT__;
-      }
-      .note {
-        color: __COLOR_MUTED__;
+      h1 { margin: 8px 0; font-size: 28px; line-height: 1.2; }
+      .hero p { font-size: 14px; line-height: 1.45; }
+      .cta {
+        display: inline-block;
+        text-decoration: none;
+        background: __COLOR_PRIMARY__;
+        color: #fff;
+        border-radius: calc(__BORDER_RADIUS_PX__px + 4px);
+        padding: 10px 14px;
+        font-weight: 700;
         font-size: 13px;
+      }
+      .features {
+        margin: 0;
+        padding: 14px 16px 16px 30px;
+      }
+      .features li { margin: 6px 0; font-size: 13px; }
+      .note {
+        border-top: 1px solid #e5e7eb;
+        padding: 14px 16px;
+        color: __COLOR_MUTED__;
+        font-size: 12px;
       }
     </style>
   </head>
   <body>
     <div class="card">
-      <div class="header">__BRAND_NAME__</div>
-      <div class="copy">
-        <p>Hi __RECIPIENT_FIRST_NAME__,</p>
-        <p><strong>__CAMPAIGN_SUBJECT__</strong></p>
-        <p class="note">This campaign has an interactive chat experience in AMP-capable inboxes.</p>
+      <div class="header">
+        <div class="brand">__BRAND_NAME__</div>
+        <div class="subject">__CAMPAIGN_SUBJECT__</div>
+      </div>
+      <div class="hero">
+        <div class="eyebrow">__HERO_EYEBROW__</div>
+        <h1>__HERO_HEADLINE__</h1>
+        <p>Hi __RECIPIENT_FIRST_NAME__, __HERO_BODY__</p>
+        <a class="cta" href="https://example.com">__CTA_LABEL__</a>
+      </div>
+      <ul class="features">
+        <li>__FEATURE_1__</li>
+        <li>__FEATURE_2__</li>
+        <li>__FEATURE_3__</li>
+      </ul>
+      <div class="note">
+        __CAMPAIGN_PREHEADER__<br />
+        Interactive chat is available in AMP-capable inboxes.
       </div>
     </div>
   </body>
