@@ -147,7 +147,7 @@
   <div class="chat-container">
     <!-- Chat header -->
     <div class="chat-header">
-      <h2>Chat with ChatGPT</h2>
+      <h2>Chat with AI Rep</h2>
     </div>
 
     <!-- Chat window -->
@@ -160,7 +160,7 @@
             <p [text]="chatHistory[chatHistory.length -1].message"></p>
           </div>
         </div>
-        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 0 && chatHistory[chatHistory.length -1].sender == 'ChatGPT')">
+        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 0 && chatHistory[chatHistory.length -1].sender == 'AI')">
           <div class="message-bubble">
             <p [text]="chatHistory[chatHistory.length -1].message"></p>
           </div>
@@ -171,7 +171,7 @@
             <p [text]="chatHistory[chatHistory.length -2].message"></p>
           </div>
         </div>
-        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 1 && chatHistory[chatHistory.length -2].sender == 'ChatGPT')">
+        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 1 && chatHistory[chatHistory.length -2].sender == 'AI')">
           <div class="message-bubble">
             <p [text]="chatHistory[chatHistory.length -2].message"></p>
           </div>
@@ -182,7 +182,7 @@
             <p [text]="chatHistory[chatHistory.length -3].message"></p>
           </div>
         </div>
-        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 2 && chatHistory[chatHistory.length -3].sender == 'ChatGPT')">
+        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 2 && chatHistory[chatHistory.length -3].sender == 'AI')">
           <div class="message-bubble">
             <p [text]="chatHistory[chatHistory.length -3].message"></p>
           </div>
@@ -193,7 +193,7 @@
             <p [text]="chatHistory[chatHistory.length -4].message"></p>
           </div>
         </div>
-        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 3 && chatHistory[chatHistory.length -4].sender == 'ChatGPT')">
+        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 3 && chatHistory[chatHistory.length -4].sender == 'AI')">
           <div class="message-bubble">
             <p [text]="chatHistory[chatHistory.length -4].message"></p>
           </div>
@@ -204,7 +204,7 @@
             <p [text]="chatHistory[chatHistory.length -5].message"></p>
           </div>
         </div>
-        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 4 && chatHistory[chatHistory.length -5].sender == 'ChatGPT')">
+        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 4 && chatHistory[chatHistory.length -5].sender == 'AI')">
           <div class="message-bubble">
             <p [text]="chatHistory[chatHistory.length -5].message"></p>
           </div>
@@ -215,7 +215,7 @@
             <p [text]="chatHistory[chatHistory.length -6].message"></p>
           </div>
         </div>
-        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 5 && chatHistory[chatHistory.length -6].sender == 'ChatGPT')">
+        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 5 && chatHistory[chatHistory.length -6].sender == 'AI')">
           <div class="message-bubble">
             <p [text]="chatHistory[chatHistory.length -6].message"></p>
           </div>
@@ -226,7 +226,7 @@
             <p [text]="chatHistory[chatHistory.length -7].message"></p>
           </div>
         </div>
-        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 6 && chatHistory[chatHistory.length -7].sender == 'ChatGPT')">
+        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 6 && chatHistory[chatHistory.length -7].sender == 'AI')">
           <div class="message-bubble">
             <p [text]="chatHistory[chatHistory.length -7].message"></p>
           </div>
@@ -237,7 +237,7 @@
             <p [text]="chatHistory[chatHistory.length -8].message"></p>
           </div>
         </div>
-        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 7 && chatHistory[chatHistory.length -8].sender == 'ChatGPT')">
+        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 7 && chatHistory[chatHistory.length -8].sender == 'AI')">
           <div class="message-bubble">
             <p [text]="chatHistory[chatHistory.length -8].message"></p>
           </div>
@@ -248,7 +248,7 @@
             <p [text]="chatHistory[chatHistory.length -9].message"></p>
           </div>
         </div>
-        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 8 && chatHistory[chatHistory.length -9].sender == 'ChatGPT')">
+        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 8 && chatHistory[chatHistory.length -9].sender == 'AI')">
           <div class="message-bubble">
             <p [text]="chatHistory[chatHistory.length -9].message"></p>
           </div>
@@ -259,7 +259,7 @@
             <p [text]="chatHistory[chatHistory.length -10].message"></p>
           </div>
         </div>
-        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 9 && chatHistory[chatHistory.length -10].sender == 'ChatGPT')">
+        <div class="chat-message chatgpt" [hidden]="!(chatHistory.length > 9 && chatHistory[chatHistory.length -10].sender == 'AI')">
           <div class="message-bubble">
             <p [text]="chatHistory[chatHistory.length -10].message"></p>
           </div>
@@ -270,13 +270,14 @@
     </div>
 
     <!-- Input container -->
-    <form method="post" action-xhr="https://7f81-2603-7000-3100-50b7-cc76-8512-e0-fbb8.ngrok-free.app/ganggang" id="chat-form"
+    <!-- Set CHAT_API_ENDPOINT to your live HTTPS backend, e.g. https://your-domain.com/api/v1/chat/message -->
+    <form method="post" action-xhr="CHAT_API_ENDPOINT" id="chat-form"
           on="
           submit:AMP.setState({isSubmitting: true});
           submit-success:AMP.setState({
             chatHistory: (chatHistory.concat([
               {'sender': 'You', 'message': currentMessage},
-              {'sender': 'ChatGPT', 'message': event.response.response}
+              {'sender': 'AI', 'message': event.response.response}
             ])).slice(-10),
             currentMessage: '',
             isSubmitting: false,
@@ -290,7 +291,7 @@
                [disabled]="isSubmitting"
                on="input-debounced:AMP.setState({currentMessage: event.value})" />
         <input type="hidden" name="convo_id" [value]="chatState.convoId" value="" />
-        <input type="hidden" name="auth" value="Pv7!n7h3W0rk" />
+        <input type="hidden" name="token" value="CHAT_SESSION_TOKEN" />
         <button type="submit" [disabled]="isSubmitting">Send</button>
       </div>
 
@@ -304,5 +305,3 @@
   </div>
 </body>
 </html>
-
-

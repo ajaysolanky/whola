@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Conversation {{ conversation.id }}</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 0; background: #f3f4f6; color: #111827; }
+      .wrap { max-width: 800px; margin: 0 auto; padding: 20px; }
+      .card { background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; }
+      .meta { color: #6b7280; font-size: 13px; margin-bottom: 16px; }
+      .msg { margin-bottom: 10px; display: flex; }
+      .msg.user { justify-content: flex-end; }
+      .bubble { max-width: 80%; border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px; background: white; }
+      .msg.user .bubble { background: #dcfce7; border-color: #86efac; }
+      a { color: #1d4ed8; text-decoration: none; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <p><a href="/demo/admin">&larr; Back to dashboard</a></p>
+      <div class="card">
+        <h1>Conversation {{ conversation.id }}</h1>
+        <div class="meta">
+          Campaign: {{ conversation.campaign_id }}<br />
+          Recipient: {{ conversation.recipient_email }}
+        </div>
+        {% for message in messages %}
+        <div class="msg {{ 'user' if message.role == 'user' else 'assistant' }}">
+          <div class="bubble">
+            <strong>{{ message.role }}</strong><br />
+            {{ message.content }}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </body>
+</html>

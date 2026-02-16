@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html ⚡4email data-css-strict>
+  <head>
+    <meta charset="utf-8" />
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+    <script async custom-element="amp-form" src="https://cdn.ampproject.org/v0/amp-form-0.1.js"></script>
+    <script async custom-element="amp-bind" src="https://cdn.ampproject.org/v0/amp-bind-0.1.js"></script>
+    <script async custom-template="amp-mustache" src="https://cdn.ampproject.org/v0/amp-mustache-0.2.js"></script>
+    <style amp4email-boilerplate>
+      body { visibility: hidden; }
+    </style>
+    <style amp-custom>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        padding: calc(__SPACING_SCALE__px * 2);
+        font-family: __FONT_STACK__;
+        background: #f2f4f6;
+        color: __COLOR_TEXT__;
+      }
+      .email-shell {
+        max-width: 620px;
+        margin: 0 auto;
+        background: __COLOR_SURFACE__;
+        border-radius: calc(__BORDER_RADIUS_PX__px + 4px);
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+      }
+      .hero {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .hero amp-img { border-radius: 6px; }
+      .hero-title { font-size: 16px; font-weight: 700; }
+      .hero-subtitle { color: __COLOR_MUTED__; font-size: 13px; margin-top: 4px; }
+
+      .chat-card {
+        margin: 14px;
+        border: 1px solid #ececec;
+        border-radius: calc(__BORDER_RADIUS_PX__px + 2px);
+        overflow: hidden;
+      }
+      .chat-header {
+        padding: 12px;
+        background: __COLOR_PRIMARY__;
+        color: #ffffff;
+        font-weight: 700;
+      }
+      .chat-window {
+        max-height: 310px;
+        overflow-y: auto;
+        background: #f7f8fa;
+        padding: 10px;
+      }
+      .chat-history {
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 8px;
+      }
+      .chat-message { display: flex; }
+      .chat-message.you { justify-content: flex-end; }
+      .chat-message.ai { justify-content: flex-start; }
+      .bubble {
+        max-width: 80%;
+        padding: 9px 12px;
+        border-radius: calc(__BORDER_RADIUS_PX__px + 8px);
+        font-size: 14px;
+        line-height: 1.35;
+      }
+      .chat-message.you .bubble {
+        background: #dcf8c6;
+        color: #111827;
+      }
+      .chat-message.ai .bubble {
+        background: #ffffff;
+        color: #111827;
+        border: 1px solid #e5e7eb;
+      }
+      .loading {
+        font-size: 12px;
+        color: __COLOR_MUTED__;
+        padding: 8px 10px;
+        text-align: center;
+      }
+      .chat-input {
+        display: flex;
+        border-top: 1px solid #e5e7eb;
+      }
+      .chat-input input {
+        width: 100%;
+        border: 0;
+        padding: 11px;
+        font-size: 14px;
+        background: #ffffff;
+      }
+      .chat-input button {
+        border: 0;
+        background: __COLOR_PRIMARY__;
+        color: #ffffff;
+        padding: 0 16px;
+        font-size: 14px;
+      }
+      .chat-input button[disabled], .chat-input input[disabled] {
+        opacity: 0.65;
+      }
+      .campaign-copy {
+        padding: 0 16px 16px;
+        color: __COLOR_MUTED__;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-shell">
+      <div class="hero">
+        <amp-img width="32" height="32" src="__BRAND_LOGO_URL__"></amp-img>
+        <div>
+          <div class="hero-title">__BRAND_NAME__</div>
+          <div class="hero-subtitle">__CAMPAIGN_SUBJECT__</div>
+        </div>
+      </div>
+      {{CHAT_MODULE_SLOT}}
+      <div class="campaign-copy">You are receiving this as part of a product support demo flow.</div>
+    </div>
+  </body>
+</html>

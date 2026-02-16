@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        font-family: __FONT_STACK__;
+        background: #f2f4f6;
+        margin: 0;
+        padding: 16px;
+      }
+      .card {
+        max-width: 620px;
+        margin: 0 auto;
+        background: __COLOR_SURFACE__;
+        border-radius: calc(__BORDER_RADIUS_PX__px + 4px);
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+      }
+      .header {
+        padding: 16px;
+        background: __COLOR_PRIMARY__;
+        color: white;
+        font-weight: 700;
+      }
+      .copy {
+        padding: 16px;
+        color: __COLOR_TEXT__;
+      }
+      .note {
+        color: __COLOR_MUTED__;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="header">__BRAND_NAME__</div>
+      <div class="copy">
+        <p>Hi __RECIPIENT_FIRST_NAME__,</p>
+        <p><strong>__CAMPAIGN_SUBJECT__</strong></p>
+        <p class="note">This campaign has an interactive chat experience in AMP-capable inboxes.</p>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "brand_id": "meridian",
+  "brand_name": "Meridian Home",
+  "logo_url": "https://dummyimage.com/64x64/0f766e/ffffff.png&text=M",
+  "font_stack": "Georgia, 'Times New Roman', serif",
+  "color_primary": "#0F766E",
+  "color_surface": "#F9FFFE",
+  "color_text": "#0F172A",
+  "color_muted": "#64748B",
+  "border_radius_px": 6,
+  "spacing_scale": 9,
+  "chat_header_title": "Message a Meridian specialist"
+}

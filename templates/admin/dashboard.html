@@ -1,0 +1,327 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Demo Operator Dashboard</title>
+    <style>
+      :root {
+        --bg: #f3f4f6;
+        --card: #ffffff;
+        --ink: #111827;
+        --muted: #6b7280;
+        --line: #e5e7eb;
+        --primary: #0f172a;
+        --primary-soft: #e2e8f0;
+        --ok-bg: #dcfce7;
+        --ok-ink: #166534;
+        --err-bg: #fee2e2;
+        --err-ink: #991b1b;
+      }
+      * { box-sizing: border-box; }
+      body {
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+      }
+      .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 22px;
+      }
+      .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 16px;
+        margin-bottom: 12px;
+      }
+      h1 { margin: 0; font-size: 40px; line-height: 1.1; letter-spacing: -0.02em; }
+      .subtitle { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+      .endpoint {
+        border: 1px dashed #cbd5e1;
+        border-radius: 10px;
+        padding: 10px 12px;
+        background: #f8fafc;
+        font-size: 12px;
+        color: #334155;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(120px, 1fr));
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .stat {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+      }
+      .stat .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+      .stat .value { font-size: 24px; font-weight: 700; margin-top: 4px; }
+      .msg { padding: 10px 12px; border-radius: 10px; margin-bottom: 12px; border: 1px solid transparent; }
+      .ok { background: var(--ok-bg); color: var(--ok-ink); border-color: #86efac; }
+      .err { background: var(--err-bg); color: var(--err-ink); border-color: #fca5a5; }
+      .notice {
+        margin-bottom: 16px;
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        color: #9a3412;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 13px;
+      }
+      .notice strong { color: #7c2d12; }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      h2 {
+        margin: 0 0 12px;
+        font-size: 30px;
+        letter-spacing: -0.02em;
+      }
+      .card-help { color: var(--muted); font-size: 13px; margin: -6px 0 12px; }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        color: #374151;
+        margin-bottom: 6px;
+      }
+      input, select, textarea, button {
+        width: 100%;
+        padding: 10px 11px;
+        border-radius: 10px;
+        border: 1px solid #cbd5e1;
+        font-size: 14px;
+      }
+      input:focus, select:focus, textarea:focus {
+        outline: 2px solid #bfdbfe;
+        border-color: #60a5fa;
+      }
+      textarea { min-height: 120px; font-family: "SFMono-Regular", Consolas, monospace; }
+      .cta { margin-top: 12px; }
+      button {
+        background: var(--primary);
+        color: white;
+        border: 0;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .table-wrap { overflow-x: auto; }
+      table { width: 100%; border-collapse: collapse; }
+      th, td {
+        text-align: left;
+        border-bottom: 1px solid var(--line);
+        padding: 10px 8px;
+        font-size: 13px;
+        vertical-align: top;
+      }
+      th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+      .mono { font-family: "SFMono-Regular", Consolas, monospace; font-size: 12px; }
+      .subtle { color: var(--muted); font-size: 12px; margin-top: 3px; }
+      .status {
+        display: inline-block;
+        padding: 3px 9px;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 11px;
+      }
+      .status.draft { background: #e0f2fe; color: #0c4a6e; }
+      .status.sent { background: #dcfce7; color: #166534; }
+      .status.failed { background: #fee2e2; color: #991b1b; }
+      .actions { min-width: 220px; }
+      .actions .send-btn { margin-bottom: 8px; }
+      .links { display: flex; gap: 10px; flex-wrap: wrap; }
+      .links a { color: #1d4ed8; text-decoration: none; font-weight: 500; }
+      .links a:hover { text-decoration: underline; }
+      .empty { color: var(--muted); font-size: 14px; padding: 8px 0; }
+      .sim-wrap { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff; }
+      .sim-head {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--line);
+        background: #f8fafc;
+        font-size: 12px;
+        color: #475569;
+      }
+      .sim-head strong { color: #1e293b; }
+      .sim-frame {
+        width: 100%;
+        height: 640px;
+        border: 0;
+        background: #fff;
+      }
+      .sim-help { font-size: 12px; color: var(--muted); margin-top: 8px; }
+      .sim-help a { color: #1d4ed8; text-decoration: none; }
+      .sim-help a:hover { text-decoration: underline; }
+      @media (max-width: 980px) {
+        .stats { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
+        .grid { grid-template-columns: 1fr; }
+        .top { flex-direction: column; align-items: flex-start; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="top">
+        <div>
+          <h1>Demo Operator Dashboard</h1>
+          <p class="subtitle">Build a branded AMP campaign, send it, and monitor live inbox conversations.</p>
+        </div>
+        <div class="endpoint">
+          <strong>Chat API Endpoint</strong><br />{{ base_url }}/api/v1/chat/message
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="label">Campaigns</div><div class="value">{{ stats.campaign_count }}</div></div>
+        <div class="stat"><div class="label">Draft</div><div class="value">{{ stats.draft_count }}</div></div>
+        <div class="stat"><div class="label">Sent</div><div class="value">{{ stats.sent_count }}</div></div>
+        <div class="stat"><div class="label">Failed</div><div class="value">{{ stats.failed_count }}</div></div>
+        <div class="stat"><div class="label">Conversations</div><div class="value">{{ stats.conversation_count }}</div></div>
+      </div>
+
+      {% if message %}<div class="msg ok">{{ message }}</div>{% endif %}
+      {% if error %}<div class="msg err">{{ error }}</div>{% endif %}
+
+      <div class="notice">
+        <strong>Before sending:</strong> configure <code>SMTP_HOST</code>/<code>SMTP_USERNAME</code>/<code>SMTP_PASSWORD</code> and set a public <code>BASE_URL</code>.
+      </div>
+
+      {% if amp_simulation %}
+      <div class="card" id="amp-sim">
+        <h2>AMP Simulation</h2>
+        <p class="card-help">
+          Approximate browser simulation of in-email AMP for campaign
+          <code>{{ amp_simulation.campaign_name }}</code> ({{ amp_simulation.campaign_id[:8] }}...).
+          Use this for quick visual checks, then validate in real inbox clients.
+        </p>
+        <div class="sim-wrap">
+          <div class="sim-head">
+            <strong>Theme:</strong> {{ amp_simulation.brand_id }} |
+            <strong>Chat endpoint:</strong> {{ base_url }}/api/v1/chat/message
+          </div>
+          <iframe class="sim-frame" sandbox="allow-scripts allow-forms allow-same-origin" srcdoc="{{ amp_simulation.amp_html|e }}"></iframe>
+        </div>
+        <p class="sim-help">
+          For strict validation, copy from
+          <a href="/api/v1/demo/preview/{{ amp_simulation.brand_id }}" target="_blank">Preview JSON</a>
+          into
+          <a href="https://amp.gmail.dev/playground/" target="_blank">AMP Playground</a>.
+        </p>
+      </div>
+      {% endif %}
+
+      <div class="card">
+        <h2>Create Campaign</h2>
+        <p class="card-help">Recipients format: one line per recipient as <code>email,first_name</code>. Example: <code>alex@example.com,Alex</code></p>
+        <form method="post" action="/demo/admin/campaigns/create">
+          <div class="grid">
+            <div>
+              <label>Brand Theme</label>
+              <select name="brand_id" required>
+                {% for brand in brands %}
+                <option value="{{ brand.brand_id }}">{{ brand.brand_name }} ({{ brand.brand_id }})</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div>
+              <label>Campaign Name</label>
+              <input name="name" placeholder="Q1 Demo Campaign" required />
+            </div>
+            <div>
+              <label>Subject</label>
+              <input name="subject" placeholder="Find your perfect fit" required />
+            </div>
+            <div>
+              <label>From Email</label>
+              <input name="from_email" placeholder="demo@yourdomain.com" required />
+            </div>
+            <div>
+              <label>Reply-To</label>
+              <input name="reply_to" placeholder="demo@yourdomain.com" required />
+            </div>
+            <div>
+              <label>Recipients</label>
+              <textarea name="recipients" placeholder="alice@example.com,Alice&#10;bob@example.com,Bob" required></textarea>
+            </div>
+          </div>
+          <div class="cta"><button type="submit">Create Campaign</button></div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Campaigns</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Campaign</th><th>Brand</th><th>Status</th><th>Recipients</th><th>Created</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+              {% for c in campaigns %}
+              <tr>
+                <td>
+                  <div><strong>{{ c.name }}</strong></div>
+                  <div class="subtle">{{ c.subject }}</div>
+                  <div class="mono" title="{{ c.id }}">{{ c.id[:8] }}...</div>
+                </td>
+                <td>{{ c.brand_id }}</td>
+                <td><span class="status {{ c.status }}">{{ c.status }}</span></td>
+                <td>{{ c.recipient_count }}</td>
+                <td>{{ c.created_at.strftime('%Y-%m-%d %H:%M') if c.created_at else '-' }}</td>
+                <td class="actions">
+                  <form method="post" action="/demo/admin/campaigns/{{ c.id }}/send">
+                    <input type="hidden" name="base_url" value="{{ base_url }}" />
+                    <button class="send-btn" type="submit">Send Campaign</button>
+                  </form>
+                  <div class="links">
+                    <a href="/demo/admin?preview_campaign={{ c.id }}#amp-sim">Simulate AMP</a>
+                    <a href="/api/v1/demo/preview/{{ c.brand_id }}" target="_blank">Preview JSON</a>
+                    <a href="/demo/preview-page/{{ c.brand_id }}" target="_blank">Preview Page</a>
+                  </div>
+                </td>
+              </tr>
+              {% else %}
+              <tr><td colspan="6" class="empty">No campaigns yet. Create one above.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Live Conversations</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Conversation</th><th>Campaign</th><th>Recipient</th><th>Updated</th><th>Open</th></tr>
+            </thead>
+            <tbody>
+              {% for convo in conversations %}
+              <tr>
+                <td class="mono" title="{{ convo.id }}">{{ convo.id[:8] }}...</td>
+                <td class="mono" title="{{ convo.campaign_id }}">{{ convo.campaign_id[:8] }}...</td>
+                <td>{{ convo.recipient_email }}</td>
+                <td>{{ convo.last_message_at.strftime('%Y-%m-%d %H:%M:%S') if convo.last_message_at else '-' }}</td>
+                <td><a href="/demo/admin/conversations/{{ convo.id }}">View</a></td>
+              </tr>
+              {% else %}
+              <tr><td colspan="5" class="empty">No conversations yet.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

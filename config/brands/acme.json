@@ -1,0 +1,13 @@
+{
+  "brand_id": "acme",
+  "brand_name": "Acme Outdoors",
+  "logo_url": "https://dummyimage.com/64x64/1d4ed8/ffffff.png&text=A",
+  "font_stack": "Helvetica, Arial, sans-serif",
+  "color_primary": "#1D4ED8",
+  "color_surface": "#FFFFFF",
+  "color_text": "#111827",
+  "color_muted": "#6B7280",
+  "border_radius_px": 10,
+  "spacing_scale": 8,
+  "chat_header_title": "Talk to an Acme product rep"
+}

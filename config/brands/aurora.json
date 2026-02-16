@@ -1,0 +1,13 @@
+{
+  "brand_id": "aurora",
+  "brand_name": "Aurora Beauty",
+  "logo_url": "https://dummyimage.com/64x64/be185d/ffffff.png&text=A",
+  "font_stack": "'Trebuchet MS', Helvetica, Arial, sans-serif",
+  "color_primary": "#BE185D",
+  "color_surface": "#FFFDFB",
+  "color_text": "#3F1D2A",
+  "color_muted": "#9D6B80",
+  "border_radius_px": 14,
+  "spacing_scale": 10,
+  "chat_header_title": "Ask our beauty concierge"
+}
