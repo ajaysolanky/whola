@@ -7,24 +7,31 @@
   <div class="chat-header">__CHAT_HEADER_TITLE__</div>
   <div class="chat-window">
     <div class="chat-history">
-      <div class="chat-message you" [hidden]="!(chatHistory.length > 0 && chatHistory[chatHistory.length -1].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -1].message"></p></div></div>
-      <div class="chat-message ai" [hidden]="!(chatHistory.length > 0 && chatHistory[chatHistory.length -1].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -1].message"></p></div></div>
-      <div class="chat-message you" [hidden]="!(chatHistory.length > 1 && chatHistory[chatHistory.length -2].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -2].message"></p></div></div>
-      <div class="chat-message ai" [hidden]="!(chatHistory.length > 1 && chatHistory[chatHistory.length -2].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -2].message"></p></div></div>
-      <div class="chat-message you" [hidden]="!(chatHistory.length > 2 && chatHistory[chatHistory.length -3].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -3].message"></p></div></div>
-      <div class="chat-message ai" [hidden]="!(chatHistory.length > 2 && chatHistory[chatHistory.length -3].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -3].message"></p></div></div>
-      <div class="chat-message you" [hidden]="!(chatHistory.length > 3 && chatHistory[chatHistory.length -4].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -4].message"></p></div></div>
-      <div class="chat-message ai" [hidden]="!(chatHistory.length > 3 && chatHistory[chatHistory.length -4].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -4].message"></p></div></div>
-      <div class="chat-message you" [hidden]="!(chatHistory.length > 4 && chatHistory[chatHistory.length -5].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -5].message"></p></div></div>
-      <div class="chat-message ai" [hidden]="!(chatHistory.length > 4 && chatHistory[chatHistory.length -5].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -5].message"></p></div></div>
+      <div class="chat-message ai starter">
+        <div class="bubble">Hi, I can help with fit, materials, shipping, and recommendations. What would you like to know?</div>
+      </div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 4 && chatHistory[chatHistory.length -5].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -5].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 4 && chatHistory[chatHistory.length -5].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -5].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 3 && chatHistory[chatHistory.length -4].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -4].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 3 && chatHistory[chatHistory.length -4].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -4].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 2 && chatHistory[chatHistory.length -3].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -3].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 2 && chatHistory[chatHistory.length -3].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -3].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 1 && chatHistory[chatHistory.length -2].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -2].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 1 && chatHistory[chatHistory.length -2].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -2].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 0 && chatHistory[chatHistory.length -1].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -1].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 0 && chatHistory[chatHistory.length -1].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -1].message"></p></div></div>
     </div>
-    <div [hidden]="!isSubmitting" class="loading">Waiting for response...</div>
+    <div hidden [hidden]="!isSubmitting" class="loading">Waiting for response...</div>
   </div>
   <form method="post" action-xhr="__CHAT_ENDPOINT__" on="
-    submit:AMP.setState({isSubmitting: true});
+    submit:AMP.setState({
+      isSubmitting: true,
+      chatHistory: (chatHistory.concat([
+        {'sender': 'You', 'message': currentMessage}
+      ])).slice(-5)
+    });
     submit-success:AMP.setState({
       chatHistory: (chatHistory.concat([
-        {'sender': 'You', 'message': currentMessage},
         {'sender': 'AI', 'message': event.response.response}
       ])).slice(-5),
       currentMessage: '',
@@ -34,7 +41,7 @@
     submit-error:AMP.setState({isSubmitting: false});
   ">
     <div class="chat-input">
-      <input type="text" name="message" placeholder="Ask anything about this offer" required [value]="currentMessage" [disabled]="isSubmitting" on="input-debounced:AMP.setState({currentMessage: event.value})" />
+      <input type="text" name="message" placeholder="Ask anything about this offer" required [value]="currentMessage" [disabled]="isSubmitting" on="input-debounced:AMP.setState({currentMessage: event.value});change:AMP.setState({currentMessage: event.value})" />
       <input type="hidden" name="token" value="__CHAT_TOKEN__" />
       <input type="hidden" name="convo_id" [value]="chatState.convoId" value="__CONVO_ID__" />
       <button type="submit" [disabled]="isSubmitting">Send</button>

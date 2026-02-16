@@ -15,8 +15,17 @@
         margin: 0;
         padding: calc(__SPACING_SCALE__px * 2);
         font-family: __FONT_STACK__;
-        background: #f2f4f6;
+        background: #eff2f6;
         color: __COLOR_TEXT__;
+      }
+      .preheader {
+        display: none;
+        font-size: 1px;
+        line-height: 1px;
+        max-height: 0;
+        max-width: 0;
+        opacity: 0;
+        overflow: hidden;
       }
       .email-shell {
         max-width: 620px;
@@ -25,20 +34,84 @@
         border-radius: calc(__BORDER_RADIUS_PX__px + 4px);
         overflow: hidden;
         border: 1px solid #e5e7eb;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
       }
-      .hero {
+      .brand-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 16px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .brand-left {
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 16px;
+      }
+      .brand-left amp-img { border-radius: 6px; }
+      .brand-name { font-weight: 700; font-size: 15px; }
+      .badge {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: __COLOR_PRIMARY__;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        padding: 4px 8px;
+        border-radius: 999px;
+      }
+      .hero {
+        padding: 18px 16px;
         border-bottom: 1px solid #e5e7eb;
       }
-      .hero amp-img { border-radius: 6px; }
-      .hero-title { font-size: 16px; font-weight: 700; }
-      .hero-subtitle { color: __COLOR_MUTED__; font-size: 13px; margin-top: 4px; }
-
+      .eyebrow {
+        font-size: 11px;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: __COLOR_MUTED__;
+        margin-bottom: 8px;
+        font-weight: 700;
+      }
+      .hero h1 {
+        margin: 0;
+        font-size: 28px;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+      }
+      .hero p {
+        margin: 10px 0 14px;
+        font-size: 14px;
+        line-height: 1.45;
+        color: __COLOR_TEXT__;
+      }
+      .hero .cta {
+        display: inline-block;
+        background: __COLOR_PRIMARY__;
+        color: #ffffff;
+        border-radius: calc(__BORDER_RADIUS_PX__px + 4px);
+        padding: 10px 14px;
+        font-weight: 700;
+        font-size: 13px;
+        text-decoration: none;
+      }
+      .feature-list {
+        margin: 0;
+        padding: 0 16px 16px 32px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .feature-list li {
+        margin: 6px 0;
+        font-size: 13px;
+        color: __COLOR_TEXT__;
+      }
+      .chat-intro {
+        padding: 14px 16px 8px;
+        font-size: 13px;
+        color: __COLOR_MUTED__;
+      }
       .chat-card {
-        margin: 14px;
+        margin: 0 14px 14px;
         border: 1px solid #ececec;
         border-radius: calc(__BORDER_RADIUS_PX__px + 2px);
         overflow: hidden;
@@ -50,14 +123,14 @@
         font-weight: 700;
       }
       .chat-window {
-        max-height: 310px;
+        max-height: 300px;
         overflow-y: auto;
         background: #f7f8fa;
         padding: 10px;
       }
       .chat-history {
         display: flex;
-        flex-direction: column-reverse;
+        flex-direction: column;
         gap: 8px;
       }
       .chat-message { display: flex; }
@@ -69,6 +142,8 @@
         border-radius: calc(__BORDER_RADIUS_PX__px + 8px);
         font-size: 14px;
         line-height: 1.35;
+        overflow-wrap: anywhere;
+        word-break: break-word;
       }
       .chat-message.you .bubble {
         background: #dcf8c6;
@@ -111,19 +186,70 @@
         color: __COLOR_MUTED__;
         font-size: 12px;
       }
+      .post-chat {
+        margin: 0 14px 14px;
+        border: 1px solid #e5e7eb;
+        border-radius: calc(__BORDER_RADIUS_PX__px + 2px);
+        padding: 12px;
+        background: #fafafa;
+      }
+      .post-chat h3 {
+        margin: 0 0 6px;
+        font-size: 14px;
+      }
+      .post-chat p {
+        margin: 0 0 10px;
+        font-size: 12px;
+        color: __COLOR_MUTED__;
+      }
+      .chip-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .chip {
+        font-size: 11px;
+        border: 1px solid #d1d5db;
+        border-radius: 999px;
+        padding: 4px 8px;
+        color: #334155;
+        background: #ffffff;
+      }
     </style>
   </head>
   <body>
+    <div class="preheader">__CAMPAIGN_PREHEADER__</div>
     <div class="email-shell">
+      <div class="brand-row">
+        <div class="brand-left">
+          <amp-img width="32" height="32" src="__BRAND_LOGO_URL__"></amp-img>
+          <div class="brand-name">__BRAND_NAME__</div>
+        </div>
+        <div class="badge">__OFFER_BADGE__</div>
+      </div>
       <div class="hero">
-        <amp-img width="32" height="32" src="__BRAND_LOGO_URL__"></amp-img>
-        <div>
-          <div class="hero-title">__BRAND_NAME__</div>
-          <div class="hero-subtitle">__CAMPAIGN_SUBJECT__</div>
+        <div class="eyebrow">__HERO_EYEBROW__</div>
+        <h1>__HERO_HEADLINE__</h1>
+        <p>Hi __RECIPIENT_FIRST_NAME__, __HERO_BODY__</p>
+        <a href="https://example.com" class="cta">__CTA_LABEL__</a>
+      </div>
+      <ul class="feature-list">
+        <li>__FEATURE_1__</li>
+        <li>__FEATURE_2__</li>
+        <li>__FEATURE_3__</li>
+      </ul>
+      <div class="chat-intro">Need help deciding? Chat with our AI rep directly in this email.</div>
+      {{CHAT_MODULE_SLOT}}
+      <div class="post-chat">
+        <h3>Still deciding?</h3>
+        <p>Ask for recommendations tailored to your use case:</p>
+        <div class="chip-list">
+          <span class="chip">Best option for beginners</span>
+          <span class="chip">What ships fastest</span>
+          <span class="chip">Compare two products</span>
         </div>
       </div>
-      {{CHAT_MODULE_SLOT}}
-      <div class="campaign-copy">You are receiving this as part of a product support demo flow.</div>
+      <div class="campaign-copy">Campaign: __CAMPAIGN_SUBJECT__</div>
     </div>
   </body>
 </html>
