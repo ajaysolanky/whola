@@ -174,10 +174,13 @@ def admin_dashboard():
 
                 try:
                     brand_cfg = load_brand_config(campaign.brand_id)
+                    # Use an isolated preview conversation scope so each simulator load
+                    # starts with a clean history instead of reusing prior turns.
+                    preview_campaign_id = f"preview-{campaign.id}"
                     token = sign_token(
-                        campaign_id=campaign.id,
+                        campaign_id=preview_campaign_id,
                         recipient=recipient_payload["email"],
-                        token_id=token_id,
+                        token_id=f"preview-session-{uuid.uuid4()}",
                     )
                     chat_endpoint = f"{settings.base_url.rstrip('/')}/api/v1/chat/message"
                     rendered = render_campaign_templates(
@@ -663,6 +666,46 @@ def chat_message():
             "request_id": g.request_id,
         }
     )
+
+
+@app.get("/api/v1/chat/history")
+@amp_response
+def chat_history():
+    token = request.args.get("token")
+    if not token:
+        return _error("Missing token", 400)
+
+    try:
+        claims = verify_token(str(token))
+    except TokenError as exc:
+        return _error(str(exc), 401)
+
+    campaign_id = str(claims["campaign_id"])
+    recipient = str(claims["recipient"])
+    token_id = str(claims["token_id"])
+    convo_id = request.args.get("convo_id")
+
+    with SessionLocal() as db:
+        query = db.query(Conversation).filter_by(
+            campaign_id=campaign_id,
+            recipient_email=recipient,
+            token_id=token_id,
+        )
+        if convo_id:
+            convo = query.filter(Conversation.id == str(convo_id)).one_or_none()
+        else:
+            convo = query.order_by(Conversation.last_message_at.desc()).first()
+
+        if convo is None:
+            return jsonify({"messages": [], "request_id": g.request_id})
+
+        return jsonify(
+            {
+                "convo_id": convo.id,
+                "messages": get_conversation_messages(db, convo.id),
+                "request_id": g.request_id,
+            }
+        )
 
 
 @app.get("/api/v1/demo/conversations")

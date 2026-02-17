@@ -118,12 +118,15 @@ def inject_chat_module(base_template: str, module_markup: str) -> str:
 
 def render_amp_module(brand_cfg: dict[str, Any], chat_endpoint: str, token: str, convo_id: str = "") -> str:
     module = _read_file(TEMPLATE_MODULE_DIR / "amp_chat_module.html")
+    api_base = chat_endpoint.rsplit("/api/v1/chat/message", 1)[0]
+    history_endpoint = f"{api_base}/api/v1/chat/history"
     return _replace_tokens(
         module,
         {
             "CHAT_ENDPOINT": chat_endpoint,
             "CHAT_TOKEN": token,
             "CONVO_ID": convo_id,
+            "HISTORY_ENDPOINT": history_endpoint,
             "CHAT_HEADER_TITLE": str(brand_cfg["chat_header_title"]),
         },
     )

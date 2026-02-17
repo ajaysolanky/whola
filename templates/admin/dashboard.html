@@ -378,7 +378,6 @@ Chat endpoint: {{ base_url }}/api/v1/chat/message</pre>
     {% if amp_simulation %}
     <script>
       (function () {
-        window.__simScriptLoaded = true;
         const iframe = document.querySelector(".sim-frame");
         if (!iframe) return;
 
@@ -388,9 +387,6 @@ Chat endpoint: {{ base_url }}/api/v1/chat/message</pre>
           if (!doc) return;
           const chatWindow = doc.querySelector(".chat-window");
           const chatHistory = doc.querySelector(".chat-history");
-          const getChatInput = function () {
-            return doc.querySelector(".chat-input input[name='message']");
-          };
           if (!chatWindow || !chatHistory) {
             if (tryCount < 40) {
               setTimeout(function () { attachAutoScroll(tryCount + 1); }, 100);
@@ -410,10 +406,6 @@ Chat endpoint: {{ base_url }}/api/v1/chat/message</pre>
 
           scrollToBottom();
           const observer = new MutationObserver(function () {
-            const chatInput = getChatInput();
-            if (chatInput && !chatInput.disabled) {
-              chatInput.value = "";
-            }
             requestAnimationFrame(scrollToBottom);
           });
           observer.observe(chatHistory, { childList: true, subtree: true, characterData: true });
@@ -421,17 +413,6 @@ Chat endpoint: {{ base_url }}/api/v1/chat/message</pre>
           const form = doc.querySelector(".chat-card form");
           if (form) {
             form.addEventListener("submit", function () {
-              let clearTicks = 0;
-              const clearLoop = setInterval(function () {
-                clearTicks += 1;
-                const chatInput = getChatInput();
-                if (chatInput) {
-                  chatInput.value = "";
-                }
-                if (!chatInput || (!chatInput.disabled && clearTicks > 8) || clearTicks > 60) {
-                  clearInterval(clearLoop);
-                }
-              }, 50);
               requestAnimationFrame(scrollToBottom);
               setTimeout(scrollToBottom, 60);
               setTimeout(scrollToBottom, 120);

@@ -5,6 +5,7 @@
     <script async src="https://cdn.ampproject.org/v0.js"></script>
     <script async custom-element="amp-form" src="https://cdn.ampproject.org/v0/amp-form-0.1.js"></script>
     <script async custom-element="amp-bind" src="https://cdn.ampproject.org/v0/amp-bind-0.1.js"></script>
+    <script async custom-element="amp-list" src="https://cdn.ampproject.org/v0/amp-list-0.1.js"></script>
     <script async custom-template="amp-mustache" src="https://cdn.ampproject.org/v0/amp-mustache-0.2.js"></script>
     <style amp4email-boilerplate>
       body { visibility: hidden; }
@@ -137,6 +138,8 @@
       .chat-message { display: flex; }
       .chat-message.you { justify-content: flex-end; }
       .chat-message.ai { justify-content: flex-start; }
+      .chat-message.user { justify-content: flex-end; }
+      .chat-message.assistant { justify-content: flex-start; }
       .bubble {
         max-width: 80%;
         padding: 9px 12px;
@@ -155,6 +158,15 @@
         color: #111827;
       }
       .chat-message.ai .bubble {
+        background: #ffffff;
+        color: #111827;
+        border: 1px solid #e5e7eb;
+      }
+      .chat-message.user .bubble {
+        background: #dcf8c6;
+        color: #111827;
+      }
+      .chat-message.assistant .bubble {
         background: #ffffff;
         color: #111827;
         border: 1px solid #e5e7eb;
