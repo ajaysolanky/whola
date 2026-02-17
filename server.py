@@ -608,7 +608,7 @@ def demo_examples():
 def chat_message():
     data = _request_data()
     token = data.get("token")
-    message = data.get("message")
+    message = str(data.get("message", "")).strip()
     convo_id = data.get("convo_id") or None
 
     if not token:
@@ -641,7 +641,7 @@ def chat_message():
                 campaign_id=campaign_id,
                 recipient_email=recipient,
                 token_id=token_id,
-                user_message=str(message),
+                user_message=message,
                 convo_id=str(convo_id) if convo_id else None,
             )
             db.add(
@@ -661,7 +661,7 @@ def chat_message():
     return jsonify(
         {
             "convo_id": convo_id,
-            "user_message": str(message),
+            "user_message": message,
             "response": response_text,
             "request_id": g.request_id,
         }
@@ -759,7 +759,7 @@ def ganggang():
     if data.get("auth") != settings.legacy_auth_key:
         return _error("Unauthorized", 401)
 
-    message = data.get("message")
+    message = str(data.get("message", "")).strip()
     if not message:
         return _error("Missing message", 400)
 
@@ -772,7 +772,7 @@ def ganggang():
                 campaign_id="legacy",
                 recipient_email="legacy-user@example.com",
                 token_id="legacy-token",
-                user_message=str(message),
+                user_message=message,
                 convo_id=str(convo_id) if convo_id else None,
             )
         except ChatServiceError as exc:

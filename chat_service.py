@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import time
 import uuid
 from datetime import datetime
@@ -13,6 +14,34 @@ from models import Conversation, Event, Message
 
 class ChatServiceError(Exception):
     pass
+
+
+MAX_ASSISTANT_REPLY_CHARS = 560
+MAX_ASSISTANT_REPLY_LINES = 6
+
+
+def _normalize_assistant_reply(content: str) -> str:
+    """Keep assistant output readable inside constrained AMP chat viewports."""
+    text = (content or "").replace("\r\n", "\n").replace("\r", "\n").strip()
+    if not text:
+        return "I can help with fit, materials, shipping, and recommendations. What would you like to know?"
+
+    # Remove markdown-heavy formatting that renders poorly in AMP chat bubbles.
+    text = re.sub(r"`{1,3}", "", text)
+    text = re.sub(r"\*\*(.*?)\*\*", r"\1", text)
+    text = re.sub(r"^\s{0,3}(#{1,6}|\*|-|\d+\.)\s*", "", text, flags=re.MULTILINE)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+
+    lines = [line.strip() for line in text.split("\n") if line.strip()]
+    if len(lines) > MAX_ASSISTANT_REPLY_LINES:
+        lines = lines[:MAX_ASSISTANT_REPLY_LINES]
+    text = " ".join(lines)
+    text = re.sub(r"\s{2,}", " ", text).strip()
+
+    if len(text) > MAX_ASSISTANT_REPLY_CHARS:
+        text = text[: MAX_ASSISTANT_REPLY_CHARS - 1].rstrip() + "…"
+
+    return text
 
 
 def _provider_messages(db_session, conversation_id: str) -> list[dict[str, str]]:
@@ -107,6 +136,7 @@ def handle_message(
 
     provider_messages = _provider_messages(db_session, convo.id)
     assistant_reply, latency_ms = _call_openrouter(provider_messages)
+    assistant_reply = _normalize_assistant_reply(assistant_reply)
 
     db_session.add(
         Message(

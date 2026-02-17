@@ -1,11 +1,5 @@
-<amp-state id="chatState">
-  <script type="application/json">
-    {
-      "convoId": "__CONVO_ID__"
-    }
-  </script>
-</amp-state>
-<amp-state id="currentMessage"><script type="application/json">""</script></amp-state>
+<amp-state id="chatHistory"><script type="application/json">[]</script></amp-state>
+<amp-state id="chatState"><script type="application/json">{"convoId":"__CONVO_ID__"}</script></amp-state>
 <amp-state id="isSubmitting"><script type="application/json">false</script></amp-state>
 
 <div class="chat-card">
@@ -15,42 +9,70 @@
       <div class="chat-message ai starter">
         <div class="bubble">Hi, I can help with fit, materials, shipping, and recommendations. What would you like to know?</div>
       </div>
-      <amp-list
-        id="chatList"
-        layout="fixed-height"
-        height="220"
-        items="messages"
-        src="__HISTORY_ENDPOINT__?token=__CHAT_TOKEN__"
-      >
-        <template type="amp-mustache">
-          <div class="chat-message {{role}}">
-            <div class="bubble"><p>{{content}}</p></div>
-          </div>
-        </template>
-      </amp-list>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 19 && chatHistory[chatHistory.length -20].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -20].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 19 && chatHistory[chatHistory.length -20].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -20].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 18 && chatHistory[chatHistory.length -19].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -19].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 18 && chatHistory[chatHistory.length -19].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -19].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 17 && chatHistory[chatHistory.length -18].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -18].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 17 && chatHistory[chatHistory.length -18].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -18].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 16 && chatHistory[chatHistory.length -17].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -17].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 16 && chatHistory[chatHistory.length -17].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -17].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 15 && chatHistory[chatHistory.length -16].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -16].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 15 && chatHistory[chatHistory.length -16].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -16].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 14 && chatHistory[chatHistory.length -15].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -15].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 14 && chatHistory[chatHistory.length -15].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -15].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 13 && chatHistory[chatHistory.length -14].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -14].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 13 && chatHistory[chatHistory.length -14].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -14].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 12 && chatHistory[chatHistory.length -13].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -13].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 12 && chatHistory[chatHistory.length -13].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -13].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 11 && chatHistory[chatHistory.length -12].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -12].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 11 && chatHistory[chatHistory.length -12].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -12].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 10 && chatHistory[chatHistory.length -11].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -11].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 10 && chatHistory[chatHistory.length -11].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -11].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 9 && chatHistory[chatHistory.length -10].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -10].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 9 && chatHistory[chatHistory.length -10].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -10].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 8 && chatHistory[chatHistory.length -9].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -9].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 8 && chatHistory[chatHistory.length -9].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -9].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 7 && chatHistory[chatHistory.length -8].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -8].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 7 && chatHistory[chatHistory.length -8].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -8].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 6 && chatHistory[chatHistory.length -7].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -7].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 6 && chatHistory[chatHistory.length -7].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -7].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 5 && chatHistory[chatHistory.length -6].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -6].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 5 && chatHistory[chatHistory.length -6].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -6].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 4 && chatHistory[chatHistory.length -5].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -5].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 4 && chatHistory[chatHistory.length -5].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -5].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 3 && chatHistory[chatHistory.length -4].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -4].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 3 && chatHistory[chatHistory.length -4].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -4].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 2 && chatHistory[chatHistory.length -3].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -3].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 2 && chatHistory[chatHistory.length -3].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -3].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 1 && chatHistory[chatHistory.length -2].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -2].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 1 && chatHistory[chatHistory.length -2].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -2].message"></p></div></div>
+      <div class="chat-message you" hidden [hidden]="!(chatHistory.length > 0 && chatHistory[chatHistory.length -1].sender == 'You')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -1].message"></p></div></div>
+      <div class="chat-message ai" hidden [hidden]="!(chatHistory.length > 0 && chatHistory[chatHistory.length -1].sender == 'AI')"><div class="bubble"><p [text]="chatHistory[chatHistory.length -1].message"></p></div></div>
+      <div class="chat-loading" hidden [hidden]="!isSubmitting">Waiting for response...</div>
       <div id="chat-bottom"></div>
     </div>
   </div>
-  <div hidden [hidden]="!isSubmitting" class="loading">Waiting for response...</div>
   <form id="chatForm" method="post" action-xhr="__CHAT_ENDPOINT__" on="
     submit:AMP.setState({
       isSubmitting: true
     });
-    submit-success:chatForm.clear,chatList.refresh,chatSubmit.focus,AMP.setState({
+    submit-success:chatForm.clear,chatSubmit.focus,AMP.setState({
+      chatHistory: (chatHistory.concat([
+        {'sender': 'You', 'message': event.response.user_message},
+        {'sender': 'AI', 'message': event.response.response}
+      ])).slice(-20),
       isSubmitting: false,
-      currentMessage: '',
-      chatState: {
-        convoId: event.response.convo_id
-      }
+      chatState: { convoId: event.response.convo_id }
     });
     submit-error:AMP.setState({isSubmitting: false});
   ">
     <div class="chat-input">
-      <input id="chatInput" type="text" name="message" placeholder="Ask anything about this offer" required [value]="currentMessage" [disabled]="isSubmitting" on="input:AMP.setState({currentMessage: event.value})" />
+      <input id="chatInput" type="text" name="message" placeholder="Ask anything about this offer" [disabled]="isSubmitting" />
       <input type="hidden" name="token" value="__CHAT_TOKEN__" />
       <input type="hidden" name="convo_id" [value]="chatState.convoId" value="__CONVO_ID__" />
       <button id="chatSubmit" type="submit" [disabled]="isSubmitting">Send</button>
     </div>
-    <div submit-error><template type="amp-mustache"><div class="loading">Error: {{error}}</div></template></div>
+    <div submit-error><template type="amp-mustache"><div class="chat-loading">Error: {{error}}</div></template></div>
   </form>
 </div>

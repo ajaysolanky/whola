@@ -5,7 +5,6 @@
     <script async src="https://cdn.ampproject.org/v0.js"></script>
     <script async custom-element="amp-form" src="https://cdn.ampproject.org/v0/amp-form-0.1.js"></script>
     <script async custom-element="amp-bind" src="https://cdn.ampproject.org/v0/amp-bind-0.1.js"></script>
-    <script async custom-element="amp-list" src="https://cdn.ampproject.org/v0/amp-list-0.1.js"></script>
     <script async custom-template="amp-mustache" src="https://cdn.ampproject.org/v0/amp-mustache-0.2.js"></script>
     <style amp4email-boilerplate>
       body { visibility: hidden; }
@@ -124,7 +123,7 @@
         font-weight: 700;
       }
       .chat-window {
-        max-height: 300px;
+        max-height: 360px;
         overflow-y: auto;
         background: #f7f8fa;
         padding: 10px;
@@ -138,10 +137,8 @@
       .chat-message { display: flex; }
       .chat-message.you { justify-content: flex-end; }
       .chat-message.ai { justify-content: flex-start; }
-      .chat-message.user { justify-content: flex-end; }
-      .chat-message.assistant { justify-content: flex-start; }
       .bubble {
-        max-width: 80%;
+        max-width: 84%;
         padding: 9px 12px;
         border-radius: calc(__BORDER_RADIUS_PX__px + 8px);
         font-size: 14px;
@@ -151,6 +148,10 @@
         opacity: 0;
         transform: translateY(6px) scale(0.99);
         animation: bubble-in 220ms ease-out forwards;
+      }
+      .bubble p {
+        margin: 0;
+        white-space: pre-wrap;
       }
       .chat-message.you .bubble { animation-name: bubble-in-you; }
       .chat-message.you .bubble {
@@ -162,19 +163,10 @@
         color: #111827;
         border: 1px solid #e5e7eb;
       }
-      .chat-message.user .bubble {
-        background: #dcf8c6;
-        color: #111827;
-      }
-      .chat-message.assistant .bubble {
-        background: #ffffff;
-        color: #111827;
-        border: 1px solid #e5e7eb;
-      }
-      .loading {
+      .chat-loading {
         font-size: 12px;
         color: __COLOR_MUTED__;
-        padding: 8px 10px;
+        padding: 4px 2px 0;
         text-align: center;
         animation: loading-pulse 900ms ease-in-out infinite;
       }
@@ -246,7 +238,7 @@
         50% { opacity: 1; }
       }
       @media (prefers-reduced-motion: reduce) {
-        .bubble, .loading { animation: none; }
+        .bubble, .chat-loading { animation: none; }
       }
     </style>
   </head>
