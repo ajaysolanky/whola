@@ -22,8 +22,8 @@ def _build_message(campaign: dict[str, str], recipient_email: str, amp_html: str
     msg["Message-ID"] = make_msgid()
 
     msg.attach(MIMEText(text_body, "plain", "utf-8"))
-    msg.attach(MIMEText(html_html, "html", "utf-8"))
     msg.attach(MIMEText(amp_html, "x-amp-html", "utf-8"))
+    msg.attach(MIMEText(html_html, "html", "utf-8"))
     return msg
 
 
